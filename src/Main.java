@@ -9,22 +9,28 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.stream.Collectors;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Main extends Application {
 
     WorldProcessor processor1;
     WorldCanvas canvas1;
 
+    boolean isRunning = false;
+    Timer timer = new Timer();
 
-    Text text1 = new Text("Here we will show statistics for the first map.");
+    Text text1 = new Text("MAP STATS");
+    Text textAnimal1 = new Text("ANIMAL STATS");
+
+    Animal tracked;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Drawing Operations Test");
 
-        var root = new VBox();
-        var hBox = new HBox();
+        var root = new VBox(16);
+        var hBox = new HBox(16);
         root.getChildren().add(hBox);
         var stop1 = new Button("Stop MAP1");
         var stop2 = new Button("Stop MAP2");
@@ -32,7 +38,6 @@ public class Main extends Application {
         root.getChildren().add(controlsContainer);
         var scene = new Scene(root);
         primaryStage.setScene(scene);
-
 
 
         var map = WorldMap.createRandom();
@@ -50,22 +55,44 @@ public class Main extends Application {
         canvas1 = new WorldCanvas(500, 500, map);
         hBox.getChildren().add(canvas1);
         hBox.getChildren().add(text1);
+        hBox.getChildren().add(textAnimal1);
         processor1 = new WorldProcessor(map);
 
         canvas1.setOnMouseClicked(e -> {
-            try {
-                processor1.tick();
-            } catch (InvalidPositionException invalidPositionException) {
-                invalidPositionException.printStackTrace();
-            }
-            String str = "";
-            for (var animal : map.animalLayer.getAll().stream().filter(animal -> !animal.isDead).collect(Collectors.toList())){
-                str += animal.energy + "\n";
-            }
+            int x = Settings.width - (int) e.getX() / (500 / Settings.width) - 1;
+            int y = Settings.height - (int) e.getY() / (500 / Settings.height) - 1;
+            map.animalLayer.get(new Vector2(x, y)).stream().filter(ani -> !ani.isDead).findFirst().ifPresent(animal -> {
+                tracked = animal;
+            });
+        });
 
-            text1.setText(str);
-            canvas1.render();
-            System.out.println("clicked");
+
+        stop1.setOnMouseClicked(e -> {
+            if (isRunning) {
+                timer.cancel();
+                isRunning = false;
+            } else {
+                timer = new Timer();
+                isRunning = true;
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            processor1.tick();
+                        } catch (InvalidPositionException invalidPositionException) {
+                            invalidPositionException.printStackTrace();
+                        }
+
+                        text1.setText(String.format("MAP STATS\nDay: %d\nAnimals (alive): %d\nAnimals (dead): %d\nPlants: %d\nEnergy (avg): %4.3f\nDays lived (avg | only dead): %4.3f\nImmediate children (avg | only alive): %4.3f", map.day, map.getAliveAnimalCount(), map.getDeadAnimalsCount(), map.getPlantCount(), map.getAverageEnergy(), map.averageDaysLived(), map.averageImmediateChildrenCount()));
+
+                        if (tracked != null)
+                            textAnimal1.setText(String.format("ANIMAL STATS\nColor: %s\nEnergy: %d\nImmediate children: %d\nAll children: %d\n", tracked.favoriteColor.toString(), tracked.energy, tracked.children.size(), tracked.getAllChildrenCount()));
+                        else textAnimal1.setText("No animal selected :(");
+                        canvas1.render();
+
+                    }
+                }, 0, Settings.tickIntervalMs);
+            }
         });
 
 

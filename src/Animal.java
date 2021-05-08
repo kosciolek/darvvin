@@ -97,4 +97,10 @@ public class Animal extends Entity {
         positionObservers.remove(observer);
     }
 
+    public int getAllChildrenCount(){
+        int sum = children.size();
+        for (Animal ani : children) sum += ani.getAllChildrenCount();
+        return sum;
+    }
+
 }

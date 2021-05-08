@@ -97,5 +97,38 @@ class WorldMap implements IPositionObserver<Animal> {
 
         return center;
     }
+
+    public int getAliveAnimalCount(){
+        return getAllAliveAnimals().size();
+    }
+
+    public int getPlantCount(){
+        return (int)this.fieldLayer.getAll().stream().filter(field -> field.hasPlant).count();
+    }
+
+    public double getAverageEnergy(){
+        return getAllAliveAnimals().stream()
+                .mapToDouble(ani -> (double)ani.energy)
+                .average()
+                .orElse(Double.NaN);
+    }
+
+    public double averageDaysLived() {
+        return getAllAnimals().stream().filter(ani -> ani.isDead)
+                .mapToDouble(ani -> ani.dayDied - ani.dayBorn)
+                .average()
+                .orElse(Double.NaN);
+    }
+
+    public double averageImmediateChildrenCount() {
+        return getAllAliveAnimals().stream().filter(ani -> !ani.isDead)
+                .mapToDouble(ani -> (double)ani.children.size())
+                .average()
+                .orElse(Double.NaN);
+    }
+
+    public int getDeadAnimalsCount(){
+        return (int)getAllAnimals().stream().filter(ani -> ani.isDead).count();
+    }
 }
 

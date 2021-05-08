@@ -16,6 +16,7 @@ public class Settings {
     public static Double jungleRatio;
     public static Integer startingAnimals;
     public static Integer safeEnergyThreshold;
+    public static Integer tickIntervalMs;
 
 
 
@@ -33,7 +34,8 @@ public class Settings {
         plantEnergy = ((Long)jsonObject.get("plantEnergy")).intValue();
         jungleRatio = ((double)jsonObject.get("jungleRatio"));
         startingAnimals = ((Long)jsonObject.get("startingAnimals")).intValue();
-        safeEnergyThreshold = startingAnimals = ((Long)jsonObject.get("safeEnergyThreshold")).intValue();
+        safeEnergyThreshold = ((Long)jsonObject.get("safeEnergyThreshold")).intValue();
+        tickIntervalMs = ((Long)jsonObject.get("tickIntervalMs")).intValue();
 
     }
 
