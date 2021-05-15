@@ -3,6 +3,8 @@ import org.json.simple.JSONObject;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class WorldHistory {
     JSONArray days = new JSONArray();
@@ -37,12 +39,13 @@ public class WorldHistory {
 
 
     public void export() {
+
         try {
-            var writer = new FileWriter("exported.json");
-            days.writeJSONString(writer);
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+            Files.writeString(Paths.get("exported.json"), days.toJSONString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
     }
 
 
