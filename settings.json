@@ -7,5 +7,6 @@
   "safeEnergyThreshold": 50,
   "jungleRatio": 0.25,
   "startingAnimals": 20,
-  "tickIntervalMs": 50
+  "tickIntervalMs": 50,
+  "wrapBounds": true
 }

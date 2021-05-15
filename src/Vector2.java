@@ -37,13 +37,13 @@ public class Vector2 {
     public void boundarize(){
         //todo hard or soft bounds?
 
-        // hard boundaries
-        /*x = Math.min(Settings.height - 1, Math.max(0, x));
-        y = Math.min(Settings.width - 1, Math.max(0, y));*/
-
-        // Wrapping boundaries
-        x = (x + Settings.width) % Settings.width;
-        y = (y + Settings.height) % Settings.height;
+        if (Settings.wrapBounds) {
+            x = (x + Settings.width) % Settings.width;
+            y = (y + Settings.height) % Settings.height;
+        } else {
+            x = Math.min(Settings.height - 1, Math.max(0, x));
+            y = Math.min(Settings.width - 1, Math.max(0, y));
+        }
     }
 
     @Override

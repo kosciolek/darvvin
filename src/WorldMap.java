@@ -106,7 +106,7 @@ class WorldMap implements IPositionObserver<Animal> {
         return (int)this.fieldLayer.getAll().stream().filter(field -> field.hasPlant).count();
     }
 
-    public double getAverageEnergy(){
+    public double avgEnergy(){
         return getAllAliveAnimals().stream()
                 .mapToDouble(ani -> (double)ani.energy)
                 .average()

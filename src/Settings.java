@@ -17,6 +17,7 @@ public class Settings {
     public static Integer startingAnimals;
     public static Integer safeEnergyThreshold;
     public static Integer tickIntervalMs;
+    public static Boolean wrapBounds;
 
 
 
@@ -36,6 +37,7 @@ public class Settings {
         startingAnimals = ((Long)jsonObject.get("startingAnimals")).intValue();
         safeEnergyThreshold = ((Long)jsonObject.get("safeEnergyThreshold")).intValue();
         tickIntervalMs = ((Long)jsonObject.get("tickIntervalMs")).intValue();
+        wrapBounds = ((boolean)jsonObject.get("wrapBounds"));
 
     }
 
