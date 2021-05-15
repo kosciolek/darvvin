@@ -1,11 +1,10 @@
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class WorldProcessor {
 
     WorldMap map;
 
-    public WorldProcessor(WorldMap map){
+    public WorldProcessor(WorldMap map) {
         this.map = map;
     }
 
@@ -19,7 +18,8 @@ public class WorldProcessor {
                 ani.isDead = true;
                 ani.dayDied = map.day;
                 continue;
-            };
+            }
+            ;
 
             ani.rotateByGenome();
             ani.moveByDirection();
@@ -27,7 +27,7 @@ public class WorldProcessor {
     }
 
     /* Makes animals eat */
-    private void tickEat(){
+    private void tickEat() {
         for (var field : map.getAllFields().stream().filter(field -> field.hasPlant).collect(Collectors.toList())) {
             var pos = field.position;
             var animalsAt = map.getAllAliveAnimalsAt(pos);
@@ -51,7 +51,7 @@ public class WorldProcessor {
             var a1 = sorted.get(0);
             var a2 = sorted.get(1);
 
-            if (Animal.hasEnoughEnergyToKiss(a1, a2)){
+            if (Animal.hasEnoughEnergyToKiss(a1, a2)) {
                 var child = Animal.kiss(a1, a2);
                 child.position = map.getNeighboringUnoccupied(a1.position);
                 child.position.y += 1; //todo get a free tile;
@@ -70,10 +70,25 @@ public class WorldProcessor {
     }
 
     private void tickGrowPlants() {
-        /*Add plants*/
-        for (int i = 0; i < 4; i++) {
-            map.fieldLayer.get(Vector2.getRandom()).hasPlant = true;
+        //todo performance
+        var junglePlantsWhole = Math.floor(Settings.junglePlantGrowth);
+        var junglePlantsFract = map.day % (1 / Settings.junglePlantGrowth - Math.floor(Settings.junglePlantGrowth)) < 1 ? 1 : 0;
+
+        for (int i = 0; i < junglePlantsWhole + junglePlantsFract; i++) {
+            var jungles = map.getAllFields().stream().filter(field -> field.type == FieldType.JUNGLE && !field.hasPlant).collect(Collectors.toList());
+            if (jungles.isEmpty()) break;
+            jungles.get(Utils.getRandomInt(0, jungles.size())).hasPlant = true;
         }
+
+        var steppePlantsWhole = Math.floor(Settings.steppePlantGrowth);
+        var steppePlantsFract = map.day % (1 / Settings.steppePlantGrowth - Math.floor(Settings.steppePlantGrowth)) < 1 ? 1 : 0;
+
+        for (int i = 0; i < steppePlantsWhole + steppePlantsFract; i++) {
+            var steppes = map.getAllFields().stream().filter(field -> field.type == FieldType.STEPPE && !field.hasPlant).collect(Collectors.toList());
+            if (steppes.isEmpty()) break;
+            steppes.get(Utils.getRandomInt(0, steppes.size())).hasPlant = true;
+        }
+
     }
 
     public void tick() throws InvalidPositionException {

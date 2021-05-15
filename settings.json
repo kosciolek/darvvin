@@ -8,5 +8,7 @@
   "jungleRatio": 0.25,
   "startingAnimals": 20,
   "tickIntervalMs": 50,
-  "wrapBounds": true
+  "wrapBounds": true,
+  "junglePlantGrowth": 1.5,
+  "steppePlantGrowth": 0.7
 }

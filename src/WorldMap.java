@@ -36,8 +36,8 @@ class WorldMap implements IPositionObserver<Animal> {
         return animal;
     }
 
-    public Animal[] addAnimals(Animal ...animals) {
-        for(var animal : animals) {
+    public Animal[] addAnimals(Animal... animals) {
+        for (var animal : animals) {
             animalLayer.add(animal.position, animal);
             animal.addPositionObserver(this);
         }
@@ -49,21 +49,23 @@ class WorldMap implements IPositionObserver<Animal> {
         return field;
     }
 
-    public List<Animal> getAllAnimals(){
+    public List<Animal> getAllAnimals() {
         return animalLayer.getAll();
     }
+
     public List<Animal> getAllAliveAnimals() {
         return animalLayer.getAll().stream().filter(ani -> !ani.isDead).collect(Collectors.toList());
     }
 
-    public List<Field> getAllFields(){
+    public List<Field> getAllFields() {
         return fieldLayer.getAll();
     }
 
-    public Set<Animal> getAllAnimalsAt (Vector2 pos) {
+    public Set<Animal> getAllAnimalsAt(Vector2 pos) {
         return animalLayer.get(pos);
     }
-    public Set<Animal> getAllAliveAnimalsAt (Vector2 pos) {
+
+    public Set<Animal> getAllAliveAnimalsAt(Vector2 pos) {
         return animalLayer.get(pos).stream().filter(ani -> !ani.isDead).collect(Collectors.toSet());
     }
 
@@ -79,15 +81,41 @@ class WorldMap implements IPositionObserver<Animal> {
 
     public static WorldMap createRandom() throws InvalidPositionException {
         var map = new WorldMap();
+
+
+        var a = Math.sqrt(Settings.jungleRatio);
+        var r = (int) Math.floor(Math.sqrt((Settings.height * a * Settings.width * a) / Math.PI));
+
+        var centerX = Math.floorDiv(Settings.width, 2);
+        var centerY = Math.floorDiv(Settings.height, 2);
+
+
         for (int i = 0; i < Settings.width; i++) {
             for (int j = 0; j < Settings.height; j++) {
-                map.addField(new Field(new Vector2(i, j), Math.random() > Settings.jungleRatio ? FieldType.STEPPE : FieldType.JUNGLE));
+                if (Math.sqrt(Math.pow(Math.abs(i - centerX), 2) + Math.pow(Math.abs(j - centerY), 2)) <= r
+                ) {
+                    map.addField(new Field(new Vector2(i, j), FieldType.JUNGLE));
+
+                } else map.addField(new Field(new Vector2(i, j), FieldType.STEPPE));
             }
         }
+
+/*
+        SQUARE
+        var jungleWidth = (int) Math.floor(Math.sqrt(Settings.jungleRatio) * Settings.width);
+        var jungleStart = Math.floorDiv(Settings.width - jungleWidth, 2);
+        var jungleEnd = Settings.width - jungleStart;
+        for (int i = 0; i < Settings.width; i++) {
+            for (int j = 0; j < Settings.height; j++) {
+                if (i > jungleStart && i < jungleEnd && j > jungleStart && j < jungleEnd)
+                    map.addField(new Field(new Vector2(i, j), FieldType.JUNGLE));
+                else map.addField(new Field(new Vector2(i, j), FieldType.STEPPE));
+            }
+        }*/
         return map;
     }
 
-    public Vector2 getNeighboringUnoccupied(Vector2 center){
+    public Vector2 getNeighboringUnoccupied(Vector2 center) {
         for (var direction : Vector2.directions) {
             var shifted = Vector2.sum(center, direction);
             shifted.boundarize();
@@ -98,17 +126,17 @@ class WorldMap implements IPositionObserver<Animal> {
         return center;
     }
 
-    public int getAliveAnimalCount(){
+    public int getAliveAnimalCount() {
         return getAllAliveAnimals().size();
     }
 
-    public int getPlantCount(){
-        return (int)this.fieldLayer.getAll().stream().filter(field -> field.hasPlant).count();
+    public int getPlantCount() {
+        return (int) this.fieldLayer.getAll().stream().filter(field -> field.hasPlant).count();
     }
 
-    public double avgEnergy(){
+    public double avgEnergy() {
         return getAllAliveAnimals().stream()
-                .mapToDouble(ani -> (double)ani.energy)
+                .mapToDouble(ani -> (double) ani.energy)
                 .average()
                 .orElse(Double.NaN);
     }
@@ -122,13 +150,13 @@ class WorldMap implements IPositionObserver<Animal> {
 
     public double averageImmediateChildrenCount() {
         return getAllAliveAnimals().stream().filter(ani -> !ani.isDead)
-                .mapToDouble(ani -> (double)ani.children.size())
+                .mapToDouble(ani -> (double) ani.children.size())
                 .average()
                 .orElse(Double.NaN);
     }
 
-    public int getDeadAnimalsCount(){
-        return (int)getAllAnimals().stream().filter(ani -> ani.isDead).count();
+    public int getDeadAnimalsCount() {
+        return (int) getAllAnimals().stream().filter(ani -> ani.isDead).count();
     }
 }
 

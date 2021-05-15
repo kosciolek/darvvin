@@ -18,7 +18,8 @@ public class Settings {
     public static Integer safeEnergyThreshold;
     public static Integer tickIntervalMs;
     public static Boolean wrapBounds;
-
+    public static Double junglePlantGrowth;
+    public static Double steppePlantGrowth;
 
 
     private Settings() { }
@@ -38,6 +39,8 @@ public class Settings {
         safeEnergyThreshold = ((Long)jsonObject.get("safeEnergyThreshold")).intValue();
         tickIntervalMs = ((Long)jsonObject.get("tickIntervalMs")).intValue();
         wrapBounds = ((boolean)jsonObject.get("wrapBounds"));
+        junglePlantGrowth = ((double)jsonObject.get("junglePlantGrowth"));
+        steppePlantGrowth = ((double)jsonObject.get("steppePlantGrowth"));
 
     }
 
