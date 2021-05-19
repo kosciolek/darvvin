@@ -54,7 +54,6 @@ public class WorldProcessor {
             if (Animal.hasEnoughEnergyToKiss(a1, a2)) {
                 var child = Animal.kiss(a1, a2);
                 child.position = map.getNeighboringUnoccupied(a1.position);
-                child.position.y += 1; //todo get a free tile;
                 map.addAnimal(child);
 
                 a1.children.add(child);
