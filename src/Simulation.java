@@ -1,10 +1,9 @@
 import javafx.scene.Group;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,6 +16,7 @@ public class Simulation extends Group {
     WorldProcessor processor;
     WorldHistory history = new WorldHistory();
     Button stopBtn = new Button("Start");
+    Button highlightDominantBtn = new Button("Highlight dominant genomes");
 
     Animal tracked;
     boolean isRunning = false;
@@ -27,17 +27,33 @@ public class Simulation extends Group {
         var rootBox = new HBox(16);
         var rightBox = new VBox(16);
         var exportBtn = new Button("Export to JSON");
-        var btnBox = new HBox(16, stopBtn, exportBtn);
+        var btnBox = new HBox(16, stopBtn, exportBtn, highlightDominantBtn);
         rightBox.getChildren().add(btnBox);
         rightBox.getChildren().add(mapStats);
         rightBox.getChildren().add(animalStats);
 
 
+        highlightDominantBtn.setOnMouseClicked(e -> {
+            canvas.highlightDominantGenomes();
+        });
 
         this.getChildren().add(rootBox);
 
         exportBtn.setOnMouseClicked(e -> {
-            history.export();
+
+            try {
+                history.export();
+
+                System.out.println("Exported to exported.json");
+                var alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("Exported to exported.json");
+                alert.show();
+            } catch (IOException ioException) {
+                System.out.println("An error has occurred while exporting.");
+                var alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("An error has occurred while exporting.");
+                alert.show();
+            }
         });
 
         var map = WorldMap.createRandom();
@@ -94,7 +110,9 @@ public class Simulation extends Group {
                         int plantCount = map.getPlantCount();
                         int deadAnimals = map.getDeadAnimalsCount();
                         double avgEnergy = map.avgEnergy();
-                        history.addDay(aliveAnimalCount + deadAnimals, deadAnimals, aliveAnimalCount, plantCount, avgEnergy, averageImmediateChildren, averageDaysLived);
+                        String dominantGenome = map.getDominantGenome();
+                        if (dominantGenome == null) dominantGenome = "NO GENOME";
+                        history.addDay(aliveAnimalCount + deadAnimals, deadAnimals, aliveAnimalCount, plantCount, avgEnergy, averageImmediateChildren, averageDaysLived, dominantGenome);
 
                     }
                 }, 0, Settings.tickIntervalMs);
@@ -113,7 +131,12 @@ public class Simulation extends Group {
         int plantCount = map.getPlantCount();
         int deadAnimals = map.getDeadAnimalsCount();
         double avgEnergy = map.avgEnergy();
-        mapStats.setText(String.format("MAP STATS\nDay: %d\nAnimals (alive): %d\nAnimals (dead): %d\nPlants: %d\nEnergy (avg): %4.3f\nDays lived (avg | only dead): %4.3f\nImmediate children (avg | only alive): %4.3f", day, aliveAnimalCount, deadAnimals, plantCount, avgEnergy, averageDaysLived, averageImmediateChildren));
+        String dominantGenome = map.getDominantGenome();
+        if (dominantGenome == null) {
+            dominantGenome = "NO DOMINANT GENOME";
+        }
+
+        mapStats.setText(String.format("MAP STATS\nDay: %d\nAnimals (alive): %d\nAnimals (dead): %d\nPlants: %d\nEnergy (avg): %4.3f\nDays lived (avg | only dead): %4.3f\nImmediate children (avg | only alive): %4.3f\nDominant genome (only alive): %s", day, aliveAnimalCount, deadAnimals, plantCount, avgEnergy, averageDaysLived, averageImmediateChildren, dominantGenome));
 
         if (tracked != null)
             animalStats.setText(String.format("ANIMAL STATS\nColor: %s\nEnergy: %d\nImmediate children: %d\nAll children: %d\n", tracked.favoriteColor.toString(), tracked.energy, tracked.children.size(), tracked.getAllChildrenCount()));

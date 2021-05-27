@@ -35,8 +35,6 @@ public class Vector2 {
     }
 
     public void boundarize(){
-        //todo hard or soft bounds?
-
         if (Settings.wrapBounds) {
             x = (x + Settings.width) % Settings.width;
             y = (y + Settings.height) % Settings.height;

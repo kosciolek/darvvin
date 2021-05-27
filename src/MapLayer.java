@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class MapLayer<T extends Entity> {
 
-    private Map<Vector2, T> map = new HashMap<>();
+    private final Map<Vector2, T> map = new HashMap<>();
 
     public void add(Vector2 pos, T entity) {
         map.put(pos, entity);

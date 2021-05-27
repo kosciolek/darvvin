@@ -7,6 +7,7 @@ public class Palette {
     final static Color STEPPE = Color.SANDYBROWN;
     final static Color JUNGLE = Color.GREEN;
     final static Color PLANT = Color.LIGHTGREEN;
+    final static Color DOMINANT_GENOME_HIGHLIGHT = Color.AQUAMARINE;
 
     final static Color ANIMAL_DEAD = Color.BLACK;
 }

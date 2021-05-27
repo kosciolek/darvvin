@@ -12,6 +12,7 @@ public class WorldCanvas extends Canvas {
 
 
     WorldMap map;
+
     public WorldCanvas(double width, double height, WorldMap worldMap) {
         super(width, height);
         this.map = worldMap;
@@ -32,7 +33,7 @@ public class WorldCanvas extends Canvas {
 
             x += tileWidth;
             y += tileHeight;
-        } else if (tileVariant == TileVariant.SMALL_TOP){
+        } else if (tileVariant == TileVariant.SMALL_TOP) {
             tileWidth /= 4;
             tileHeight /= 4;
 
@@ -63,6 +64,15 @@ public class WorldCanvas extends Canvas {
         gc.fillRect(x, y, tileWidth, tileHeight);
     }
 
+    public void highlightDominantGenomes() {
+        var dominantGenome = map.getDominantGenome();
+        if (dominantGenome == null) return;
+
+        for (var animal : map.getAllAliveAnimals().stream().filter(ani -> ani.genome.toString().equals(dominantGenome)).collect(Collectors.toList())) {
+            paintTile(animal.position, Palette.DOMINANT_GENOME_HIGHLIGHT, TileVariant.SMALL_CENTER);
+        }
+    }
+
     public void render() {
 
         /* Reset */
@@ -76,7 +86,7 @@ public class WorldCanvas extends Canvas {
             paintTile(field.position, field.type == FieldType.JUNGLE ? Palette.JUNGLE : Palette.STEPPE, TileVariant.NORMAL);
         }
 
-        for (var animal : map.animalLayer.getAll().stream().filter(ani -> !ani.isDead).collect(Collectors.toList())) {
+        for (var animal : map.getAllAliveAnimals()) {
             paintTile(animal.position, Palette.ANIMAL, TileVariant.NORMAL);
         }
 
@@ -88,11 +98,11 @@ public class WorldCanvas extends Canvas {
             paintTile(animal.position, Palette.ANIMAL_DEAD, TileVariant.NORMAL);
         }
 
-        for (var animal : map.animalLayer.getAll().stream().filter(ani -> !ani.isDead).collect(Collectors.toList())) {
+        for (var animal : map.getAllAliveAnimals()) {
             paintTile(animal.position, animal.favoriteColor, TileVariant.SMALL_TOP);
         }
 
-        for (var animal : map.animalLayer.getAll().stream().filter(ani -> !ani.isDead).collect(Collectors.toList())) {
+        for (var animal : map.getAllAliveAnimals()) {
             paintProgressBar(animal.position, animal.energy, 50);
         }
 

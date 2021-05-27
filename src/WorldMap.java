@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class WorldMap implements IPositionObserver<Animal> {
@@ -157,6 +155,23 @@ class WorldMap implements IPositionObserver<Animal> {
 
     public int getDeadAnimalsCount() {
         return (int) getAllAnimals().stream().filter(ani -> ani.isDead).count();
+    }
+
+    public String getDominantGenome() {
+        var map = new HashMap<String, Integer>();
+        for(var ani : getAllAliveAnimals()) {
+            map.putIfAbsent(ani.genome.toString(), 0);
+            map.put(ani.genome.toString(), map.get(ani.genome.toString()) + 1);
+        }
+        String dominantGenome = null;
+        Integer count = null;
+        for (var set : map.entrySet()) {
+            if ((count == null || set.getValue() > count) && set.getValue() >= 2) {
+                count = set.getValue();
+                dominantGenome = set.getKey();
+            }
+        }
+        return dominantGenome;
     }
 }
 

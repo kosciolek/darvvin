@@ -9,6 +9,6 @@
   "startingAnimals": 20,
   "tickIntervalMs": 50,
   "wrapBounds": true,
-  "junglePlantGrowth": 1.5,
-  "steppePlantGrowth": 0.7
+  "junglePlantGrowth": 1.1,
+  "steppePlantGrowth": 0.6
 }

@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Genome {
     private List<Integer> genome;
@@ -52,7 +53,8 @@ public class Genome {
         return new Genome(newGenome);
     }
 
-
-
-
+    @Override
+    public String toString() {
+        return "[" + genome.stream().map(String::valueOf).collect(Collectors.joining(",")) + "]";
+    }
 }

@@ -16,20 +16,20 @@ public class WorldHistory {
                        int plantCount,
                        double avgEnergy,
                        double avgImmediateChildren,
-                       double avgDaysLivedDeadOnly
-                       ) {
+                       double avgDaysLivedDeadOnly,
+                       String dominantGenome
+    ) {
 
         var obj = new JSONObject();
 
-        obj.put("animalCount", animalCount);
-        obj.put("deadAnimals", deadAnimals);
-        obj.put("aliveAnimals", aliveAnimals);
-        obj.put("plantCount", plantCount);
-        obj.put("avgEnergy", avgEnergy);
-        obj.put("avgImmediateChildren", avgImmediateChildren);
-        //obj.put("avgChildrenTotal", avgChildrenTotal);
-        obj.put("avgDaysLivedDeadOnly", avgDaysLivedDeadOnly);
-
+        obj.put("animal_count", animalCount);
+        obj.put("dead_animals", deadAnimals);
+        obj.put("alive_animals", aliveAnimals);
+        obj.put("plant_count", plantCount);
+        obj.put("avg_energy", avgEnergy);
+        obj.put("avg_immediate_children", avgImmediateChildren);
+        obj.put("avg_days_lived_dead_only", avgDaysLivedDeadOnly);
+        obj.put("dominant_genome", dominantGenome);
         days.add(obj);
     }
 
@@ -38,14 +38,8 @@ public class WorldHistory {
     }
 
 
-    public void export() {
-
-        try {
-            Files.writeString(Paths.get("exported.json"), days.toJSONString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    public void export() throws IOException {
+        Files.writeString(Paths.get("exported.json"), days.toJSONString());
     }
 
 

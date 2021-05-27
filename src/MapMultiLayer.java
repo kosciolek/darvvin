@@ -2,7 +2,7 @@ import java.util.*;
 
 public class MapMultiLayer<T extends Entity> {
 
-    private Map<Vector2, Set<T>> map = new HashMap<>();
+    private final Map<Vector2, Set<T>> map = new HashMap<>();
 
     public void add(Vector2 pos, T entity) {
         map.computeIfAbsent(pos, k -> new HashSet<>());
