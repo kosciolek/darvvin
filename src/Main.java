@@ -14,20 +14,23 @@ import java.nio.file.Paths;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 public class Main extends Application {
 
 
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Drawing Operations Test");
+        primaryStage.setTitle("Darvvin");
 
 
         var simulation = new Simulation();
         var simulation2 = new Simulation();
+        var simulation3 = new Simulation();
         var box = new VBox(16);
         box.getChildren().add(simulation);
         box.getChildren().add(simulation2);
+        box.getChildren().add(simulation3);
         var scene = new Scene(box);
         primaryStage.setScene(scene);
 
@@ -35,7 +38,7 @@ public class Main extends Application {
 
     }
 
-    public static void main(String[] args) throws InvalidPositionException, IOException, ParseException {
+    public static void main(String[] args) throws IOException, ParseException {
         Settings.loadFromFile(Paths.get("settings.json"));
 
         launch(args);

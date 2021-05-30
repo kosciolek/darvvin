@@ -20,7 +20,7 @@ class WorldMap implements IPositionObserver<Animal> {
     }
 
     public boolean hasAnimal(Vector2 pos) {
-        return !animalLayer.isEmpty(pos);
+        return animalLayer.get(pos).stream().anyMatch(ani -> !ani.isDead);
     }
 
     public void onPositionChange(Animal animal, Vector2 from, Vector2 to) {
@@ -118,7 +118,7 @@ class WorldMap implements IPositionObserver<Animal> {
             var shifted = Vector2.sum(center, direction);
             shifted.boundarize();
 
-            if (animalLayer.isEmpty(shifted)) return shifted;
+            if (!hasAnimal(shifted)) return shifted;
         }
 
         return center;
