@@ -1,3 +1,10 @@
+import javax.swing.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class WorldProcessor {
@@ -7,6 +14,9 @@ public class WorldProcessor {
     public WorldProcessor(WorldMap map) {
         this.map = map;
     }
+
+    private final LinkedList<Consumer<WorldMap>> tickListeners = new LinkedList<>();
+    ExecutorService pool = Executors.newCachedThreadPool();
 
     /* Marks starved animals as dead, subtracts energy. */
     private void tickFood() {
@@ -90,12 +100,30 @@ public class WorldProcessor {
 
     }
 
-    public void tick() throws InvalidPositionException {
-        map.day += 1;
-        tickFood();
-        tickEat();
-        tickKiss();
-        tickGrowPlants();
+    public void tick() {
+        pool.execute(() -> {
+            map.day += 1;
+            tickFood();
+            tickEat();
+            try {
+                tickKiss();
+            } catch (InvalidPositionException e) {
+                e.printStackTrace();
+            }
+            tickGrowPlants();
 
+            for (var listener : tickListeners) {
+                listener.accept(map);
+            }
+        });
     }
+
+    public void addTickListener(Consumer<WorldMap> onTick) {
+        tickListeners.add(onTick);
+    }
+
+    public void removeTickListener(Consumer<WorldMap> onTick) {
+        tickListeners.remove(onTick);
+    }
+
 }

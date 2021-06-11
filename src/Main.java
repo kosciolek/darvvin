@@ -26,11 +26,9 @@ public class Main extends Application {
 
         var simulation = new Simulation();
         var simulation2 = new Simulation();
-        var simulation3 = new Simulation();
         var box = new VBox(16);
         box.getChildren().add(simulation);
         box.getChildren().add(simulation2);
-        box.getChildren().add(simulation3);
         var scene = new Scene(box);
         primaryStage.setScene(scene);
 

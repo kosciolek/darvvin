@@ -4,9 +4,12 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Simulation extends Group {
 
@@ -23,7 +26,7 @@ public class Simulation extends Group {
 
     Timer timer;
 
-    public Simulation () throws Exception {
+    public Simulation() throws Exception {
         var rootBox = new HBox(16);
         var rightBox = new VBox(16);
         var exportBtn = new Button("Export to JSON");
@@ -83,6 +86,24 @@ public class Simulation extends Group {
             updateStats();
         });
 
+        ExecutorService pool = Executors.newCachedThreadPool();
+
+        processor.addTickListener((worldMap) -> {
+            updateStats();
+
+            pool.execute(() -> {
+                var map1 = canvas.map;
+                int aliveAnimalCount = map1.getAliveAnimalCount();
+                double averageImmediateChildren = map1.averageImmediateChildrenCount();
+                double averageDaysLived = map1.averageDaysLived();
+                int plantCount = map1.getPlantCount();
+                int deadAnimals = map1.getDeadAnimalsCount();
+                double avgEnergy = map1.avgEnergy();
+                String dominantGenome = map1.getDominantGenome();
+                if (dominantGenome == null) dominantGenome = "NO GENOME";
+                history.addDay(aliveAnimalCount + deadAnimals, deadAnimals, aliveAnimalCount, plantCount, avgEnergy, averageImmediateChildren, averageDaysLived, dominantGenome);
+            });
+        });
 
         stopBtn.setOnMouseClicked(e -> {
             if (isRunning) {
@@ -96,24 +117,8 @@ public class Simulation extends Group {
                 timer.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
-                        try {
-                            processor.tick();
-                        } catch (InvalidPositionException invalidPositionException) {
-                            invalidPositionException.printStackTrace();
-                        }
-                        updateStats();
 
-                        var map = canvas.map;
-                        int aliveAnimalCount = map.getAliveAnimalCount();
-                        double averageImmediateChildren = map.averageImmediateChildrenCount();
-                        double averageDaysLived = map.averageDaysLived();
-                        int plantCount = map.getPlantCount();
-                        int deadAnimals = map.getDeadAnimalsCount();
-                        double avgEnergy = map.avgEnergy();
-                        String dominantGenome = map.getDominantGenome();
-                        if (dominantGenome == null) dominantGenome = "NO GENOME";
-                        history.addDay(aliveAnimalCount + deadAnimals, deadAnimals, aliveAnimalCount, plantCount, avgEnergy, averageImmediateChildren, averageDaysLived, dominantGenome);
-
+                        processor.tick();
                     }
                 }, 0, Settings.tickIntervalMs);
             }
