@@ -1,1 +1,2 @@
-# ⚠️ WARNING ⚠️ HIGH CODE QUALITY AHEAD
+# ⚠️ WARNING ⚠️ HIGH QUALITY CODE AHEAD
+(no, seriously, dont look here)
